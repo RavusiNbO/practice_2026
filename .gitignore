@@ -1,0 +1,6 @@
+__pycache__
+.venv
+images.tar
+server/documents/
+server/models/*
+!server/models/.gitkeep

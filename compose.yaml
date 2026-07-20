@@ -1,0 +1,60 @@
+services:
+  postgres:
+    platform: linux/amd64
+    image: rava/postgres:1.0.0
+    build: ./postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: satellites
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql
+
+  loki:
+    platform: linux/amd64
+    image: grafana/loki:3.5.3
+    command: -config.file=/etc/loki/config.yaml
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/config.yaml:/etc/loki/config.yaml:ro
+      - loki_data:/loki
+
+  mcp:
+    platform: linux/amd64
+    image: rava/server:1.0.0
+    build: ./server
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server/documents:/app/documents
+
+  qdrant:
+    platform: linux/amd64
+    image: qdrant/qdrant:v1.18.0
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  grafana:
+    platform: linux/amd64
+    image: grafana/grafana:12.1.1
+    depends_on:
+      - loki
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+
+volumes:
+  pg_data:
+  loki_data:
+  grafana_data:
+  qdrant_data:
