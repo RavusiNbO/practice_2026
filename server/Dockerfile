@@ -4,7 +4,6 @@ RUN python3 -m pip install --no-cache-dir uv
 COPY pyproject.toml uv.lock .python-version ./
 RUN uv sync --frozen
 COPY documents/ ./documents/
-COPY models/ ./models/
 
 COPY --exclude=documents/** --exclude=models/** . .
 
